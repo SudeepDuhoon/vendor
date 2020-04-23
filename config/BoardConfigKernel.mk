@@ -27,6 +27,9 @@
 #                                                      aarch64-linux-android- for arm64
 #
 #   TARGET_KERNEL_CLANG_COMPILE        = Compile kernel with clang, defaults to false
+#	
+#   TARGET_KERNEL_NEW_CLANG_COMPILE    = Compile kernel with clang-11, defaults to false
+#										  Use this with TARGET_KERNEL_CLANG_COMPILE enabled
 #
 #   TARGET_KERNEL_NEW_GCC_COMPILE      = Compile kernel with newer version GCC, defaults to false
 #
@@ -138,10 +141,17 @@ ifneq ($(TARGET_KERNEL_ADDITIONAL_FLAGS),)
   KERNEL_MAKE_FLAGS += $(TARGET_KERNEL_ADDITIONAL_FLAGS)
 endif
 
+ifeq ($(TARGET_KERNEL_NEW_CLANG_COMPILE),true)
+TOOLS_PATH_OVERRIDE += \
+    PATH=$(BUILD_TOP)/prebuilts/clang/host/linux-x86/clang-11/bin:$(BUILD_TOP)/prebuilts/tools-lineage/$(HOST_OS)-x86/bin:$$PATH \
+    LD_LIBRARY_PATH=$(BUILD_TOP)/prebuilts/clang/host/linux-x86/clang-11/lib:$(BUILD_TOP)/prebuilts/tools-lineage/$(HOST_OS)-x86/lib:$$LD_LIBRARY_PATH \
+    PERL5LIB=$(BUILD_TOP)/prebuilts/tools-lineage/common/perl-base
+else
 TOOLS_PATH_OVERRIDE := \
     PATH=$(BUILD_TOP)/prebuilts/tools-xtended/$(HOST_OS)-x86/bin:$$PATH \
     LD_LIBRARY_PATH=$(BUILD_TOP)/prebuilts/tools-xtended/$(HOST_OS)-x86/lib:$$LD_LIBRARY_PATH \
     PERL5LIB=$(BUILD_TOP)/prebuilts/tools-xtended/common/perl-base
+endif
 
 # Set DTBO image locations so the build system knows to build them
 ifeq ($(TARGET_NEEDS_DTBOIMAGE),true)
